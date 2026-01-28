@@ -1,0 +1,25 @@
+name: Sales by country and year
+description: Revenue distribution by user country and order year
+updatedAt: "2026-01-28T15:31:43.813Z"
+tiles:
+  - x: 0
+    "y": 0
+    h: 12
+    w: 24
+    tabUuid: null
+    type: saved_chart
+    properties:
+      title: ""
+      hideTitle: false
+      chartSlug: sales-by-country-year
+      chartName: Sales by country and year
+    tileSlug: sales-by-country-year
+filters:
+  metrics: []
+  dimensions: []
+  tableCalculations: []
+tabs: []
+slug: sales-by-country-year-dashboard
+spaceSlug: main
+version: 1
+downloadedAt: "2026-01-28T15:38:22.917Z"

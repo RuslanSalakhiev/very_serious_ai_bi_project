@@ -18,6 +18,7 @@ select
   o.quantity,
   o.amount,
   o.order_date,
+  extract(year from o.order_date)::int as order_year,
   o.status,
   u.email as user_email,
   u.country as user_country

@@ -1,0 +1,55 @@
+name: Revenue by month
+description: Dynamics of sales by month
+tableName: fct_orders
+updatedAt: "2026-01-28T15:38:16.492Z"
+metricQuery:
+  exploreName: fct_orders
+  dimensions:
+    - fct_orders_order_date_month
+  metrics:
+    - fct_orders_amount_sum_of_amount
+  filters: {}
+  sorts:
+    - fieldId: fct_orders_order_date_month
+      descending: false
+  limit: 500
+  metricOverrides: {}
+  dimensionOverrides: {}
+  tableCalculations: []
+  additionalMetrics:
+    - name: amount_sum_of_amount
+      label: Sum of Amount
+      description: "Sum of Amount on the table Fct orders"
+      sql: ${TABLE}.amount
+      table: fct_orders
+      type: sum
+      baseDimensionName: amount
+      formatOptions:
+        type: default
+        separator: default
+  customDimensions: []
+chartConfig:
+  type: cartesian
+  config:
+    layout:
+      xField: fct_orders_order_date_month
+      yField:
+        - fct_orders_amount_sum_of_amount
+      flipAxes: false
+      showLegend: true
+    eChartsConfig:
+      series:
+        - type: bar
+          encode:
+            xRef:
+              field: fct_orders_order_date_month
+            yRef:
+              field: fct_orders_amount_sum_of_amount
+slug: sales-analysis-revenue-by-month
+tableConfig:
+  columnOrder:
+    - fct_orders_order_date_month
+    - fct_orders_amount_sum_of_amount
+spaceSlug: main
+version: 1
+downloadedAt: "2026-01-28T15:38:22.761Z"

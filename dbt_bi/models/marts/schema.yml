@@ -7,17 +7,14 @@ models:
     meta:
       lightdash:
         metrics:
-          total_revenue:
-            type: number
-            sql: "sum(amount)"
-            format: usd
-            label: "Total Revenue"
           unique_customers:
             type: count_distinct
             sql: "user_id"
             label: "Unique Customers"
         dimensions:
           - order_date
+          - order_year
+          - user_country
           - status
           - user_id
     columns:
@@ -39,12 +36,23 @@ models:
           meta:
             dimension:
               type: number
+            metrics:
+              total_revenue:
+                type: sum
+                format: usd
+                label: "Total Revenue"
       - name: order_date
         description: "Order timestamp."
         config:
           meta:
             dimension:
               type: timestamp
+      - name: order_year
+        description: "Year of order (for grouping by year)."
+        config:
+          meta:
+            dimension:
+              type: number
       - name: product_id
         description: ""
         config:
