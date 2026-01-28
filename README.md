@@ -1,1 +1,76 @@
-# very_serious_ai_bi_project
+# BI Analytics Sandbox
+
+**Учебный репозиторий** для пошаговой установки и прохождения end-to-end кейса: Jira → Cursor (MCP) → dbt → Lightdash на тестовых данных в **PostgreSQL**. Весь Python-инструментарий (генерация данных и dbt) работает в **одном виртуальном окружении** `venv` в корне проекта.
+
+## Цель
+
+Показать, как с помощью Cursor и MCP (Database + Jira) анализировать задачу из Jira, строить dbt-модели (staging → marts), настраивать семантический слой для Lightdash и собирать дашборд без дублирования SQL. Все компоненты связаны в одной «песочнице» — можно пройти по шагам и повторить у себя.
+
+## Пошаговая установка
+
+**Главная инструкция:** [docs/installation.md](docs/installation.md)
+
+В ней по порядку описаны:
+
+| Шаг | Действие |
+|-----|----------|
+| 0 | Проверить, что установлены Python 3.10+, Docker, Git, Cursor |
+| 1 | Клонировать репозиторий |
+| 2 | Создать и активировать виртуальное окружение `venv` |
+| 3 | Установить все зависимости в `venv` (`pip install -r scripts/requirements.txt` — данные + dbt) |
+| 4 | Настроить `.env` (PGPASSWORD, LIGHTDASH_SECRET, DBT_PROJECT_DIR) |
+| 5 | Запустить Postgres и Lightdash (`docker compose up -d`) |
+| 6 | Сгенерировать тестовые данные в Postgres (`python scripts/generate_test_data.py`) |
+| 7 | Выполнить `dbt run`, `dbt compile` (подключение к Postgres из `.env`) |
+| 8 | Подключить проект dbt в Lightdash (CLI или UI) и проверить метрики |
+| 9 | Настроить MCP в Cursor для Postgres |
+| 10 | Настроить MCP в Cursor для Jira (аккаунт Atlassian, тикет) |
+| 11 | Пройти сценарий кейса (анализ задачи, модели, дашборд) |
+
+В конце инструкции — раздел «Частые проблемы» и ссылки на остальные документы.
+
+## Требования
+
+- **Python 3.10+** — генерация данных и dbt
+- **Docker и Docker Compose** — Postgres и Lightdash
+- **dbt-core + dbt-postgres** — трансформации
+- **Cursor** — редактор с MCP (Postgres, Jira)
+- **Аккаунт Atlassian (Jira Cloud)** — для шага с Jira MCP
+
+## Структура проекта
+
+| Каталог / файл | Назначение |
+|----------------|------------|
+| **data/** | Каталог для seeds или прочих файлов (опционально) |
+| **scripts/** | Генерация «грязных» данных в Postgres: `generate_test_data.py`, `requirements.txt` |
+| **dbt_bi/** | dbt-проект: staging (stg_orders, stg_users), marts (fct_orders), schema.yml с тестами и meta для Lightdash |
+| **docker/** | Скрипт `init-minio.sh` для Lightdash |
+| **docs/** | Инструкции и материалы кейса |
+| **.cursor/** | Пример `mcp.json` для Postgres и Jira (учётные данные подставить свои) |
+
+## Документация в docs/
+
+| Файл | Содержание |
+|------|------------|
+| [installation.md](docs/installation.md) | **Пошаговая установка** — основная инструкция |
+| [scenario.md](docs/scenario.md) | Сценарий кейса: проблема → решение через AI → результат |
+| [prompts.md](docs/prompts.md) | Готовые промпты для Cursor (dbt, schema.yml, Lightdash) |
+| [checklist.md](docs/checklist.md) | Чек-лист перед записью/статьёй |
+| [visual_setup.md](docs/visual_setup.md) | Настройка экрана для записи видео |
+
+## Быстрый старт (после установки по инструкции)
+
+Если вы уже прошли шаги 1–7 из [docs/installation.md](docs/installation.md):
+
+```bash
+# В корне проекта, с активированным venv
+docker compose up -d
+python scripts/generate_test_data.py   # если данные ещё не сгенерированы
+cd dbt_bi && set -a && source ../.env && set +a && dbt run && dbt compile && cd ..
+```
+
+Затем откройте http://localhost:8080 и подключите проект dbt в Lightdash (шаг 8).
+
+## Лицензия и вклад
+
+Репозиторий учебный; используйте код и инструкции по своему усмотрению. Если будете делиться кейсом — ссылка на этот репозиторий поможет другим повторить шаги.

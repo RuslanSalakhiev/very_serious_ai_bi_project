@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: "Fact table: orders joined to users and products for revenue and
+      retention metrics."
+    meta:
+      lightdash:
+        metrics:
+          total_revenue:
+            type: number
+            sql: "sum(amount)"
+            format: usd
+            label: "Total Revenue"
+          unique_customers:
+            type: count_distinct
+            sql: "user_id"
+            label: "Unique Customers"
+        dimensions:
+          - order_date
+          - status
+          - user_id
+    columns:
+      - name: order_id
+        description: "Order primary key."
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: user_id
+        description: "Customer ID."
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: amount
+        description: "Order amount."
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: order_date
+        description: "Order timestamp."
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: product_id
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: quantity
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: status
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: user_email
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: user_country
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string

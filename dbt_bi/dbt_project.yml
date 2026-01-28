@@ -1,0 +1,15 @@
+name: "dbt_bi"
+version: "1.0.0"
+config-version: 2
+
+profile: "dbt_bi"
+
+model-paths: ["models"]
+target-path: "target"
+
+models:
+  dbt_bi:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

@@ -1,0 +1,7 @@
+# Генерация данных (PostgreSQL)
+faker>=22.0.0
+psycopg2-binary>=2.9.0
+
+# dbt (всё в одном виртуальном окружении)
+dbt-core>=1.7.0
+dbt-postgres>=1.7.0
