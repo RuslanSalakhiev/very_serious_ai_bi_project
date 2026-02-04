@@ -2,7 +2,7 @@
 
 Учебная инструкция. Выполняйте шаги по порядку — каждый шаг опирается на предыдущий.
 
-**Виртуальное окружение:** весь Python-инструментарий (генерация данных и dbt) работает в **одном виртуальном окружении** `venv` в корне проекта. После активации `venv` все команды `python`, `pip` и `dbt` выполняются внутри него.
+**Виртуальное окружение:** весь Python-инструментарий (dbt) работает в **одном виртуальном окружении** `venv` в корне проекта. После активации `venv` все команды `pip` и `dbt` выполняются внутри него.
 
 ---
 
@@ -12,24 +12,56 @@
 
 | Инструмент | Версия | Зачем |
 |------------|--------|--------|
-| **Python** | 3.10 или выше | Генерация данных и dbt |
-| **Docker** | актуальная | Запуск Lightdash |
-| **Docker Compose** | v2+ | Оркестрация контейнеров |
+| **Python** | 3.10 или выше | dbt |
+| **Контейнеры** | — | **Colima** (macOS) или **Podman** (Windows) — Postgres и Lightdash |
+| **Compose** | v2+ | Оркестрация: на macOS — `docker compose` (CLI с Colima), на Windows — `podman compose` |
 | **Git** | любая | Клонирование репозитория |
 | **Cursor** | актуальная | Редактор с MCP (Jira, Postgres) |
 | **Node.js и npm** | для шага 8, вариант А | Lightdash CLI (подключение без настройки warehouse в UI) |
 
 Проверка в терминале:
 
-```bash
-python3 --version    # должно быть 3.10+
-docker --version
-docker compose version
-git --version
-node -v; npm -v      # нужны для шага 8 (вариант А — Lightdash CLI)
-```
+- **macOS (Colima):** `colima status`, затем `docker compose version`
+- **Windows (Podman):** `podman compose version`
+- Общее: `python3 --version`, `git --version`, `node -v; npm -v`
 
-Если `docker` или `docker compose` не найдены — установите Docker (на macOS: [Docker Desktop](https://docs.docker.com/desktop/install/mac-install/) или Orbstack/Colima), запустите приложение/демон и при необходимости откройте новый терминал. Подробнее — в разделе «Частые проблемы» ниже.
+Если compose не найден — установите Colima (macOS) или Podman (Windows) по разделу ниже. Подробнее — «Частые проблемы».
+
+---
+
+## Запуск контейнеров: Colima (macOS) и Podman (Windows)
+
+В инструкции ниже: **macOS** — команды через Colima (`docker compose`, `docker exec`); **Windows** — через Podman (`podman compose`, `podman exec`). Файл `docker-compose.yml` совместим с обоими.
+
+### macOS: Colima
+
+[Colima](https://github.com/abiosoft/colima) — контейнеры в Linux-виртуалке на Mac.
+
+1. Установите Colima и CLI для compose:
+   ```bash
+   brew install colima docker docker-compose
+   ```
+2. Сделайте команду `docker compose` доступной:
+   ```bash
+   mkdir -p ~/.docker/cli-plugins
+   ln -sfn $(brew --prefix)/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
+   ```
+3. Запустите Colima:
+   ```bash
+   colima start
+   ```
+4. Проверьте: `docker compose version`. Дальше в шагах используйте `docker compose` и `docker exec`.
+
+Остановка: `colima stop`. Статус: `colima status`.
+
+### Windows: Podman
+
+[Podman](https://podman.io/) и [Podman Desktop](https://podman-desktop.io/) — контейнеры без отдельного демона; совместимы с `docker-compose.yml`.
+
+1. Установите [Podman Desktop для Windows](https://podman-desktop.io/downloads) (или Podman CLI с podman.io).
+2. Запустите Podman (или Podman Desktop).
+3. В шагах ниже везде подставляйте **`podman compose`** и **`podman exec`** вместо `docker compose` / `docker exec`. Загрузка данных (шаг 6): `podman compose exec -T db ...` или `COMPOSE_CMD="podman compose" bash scripts/load_seed_to_postgres.sh`.
+4. Postgres и Lightdash доступны на `localhost:5432` и `localhost:8080`.
 
 ---
 
@@ -40,13 +72,11 @@ node -v; npm -v      # нужны для шага 8 (вариант А — Light
 3. Выполните:
 
 ```bash
-git clone https://github.com/YOUR_ORG/very_serious_ai_bi_project.git
+git clone https://github.com/RuslanSalakhiev/very_serious_ai_bi_project.git
 cd very_serious_ai_bi_project
 ```
 
-Замените `YOUR_ORG` на ваш GitHub-аккаунт или организацию. Если репозиторий ещё не на GitHub — создайте его и сделайте первый push.
-
-**Результат:** в текущей папке есть каталоги `data/`, `scripts/`, `dbt_bi/`, `docs/`, `docker/` и файлы `README.md`, `docker-compose.yml`, `.env.example`.
+**Результат:** в текущей папке есть каталоги `data/`, `scripts/`, `dbt_bi/`, `docs/`, `docker/` и файлы `README.md`, `docker-compose.yml` (используется с Colima/Podman), `.env.example`.
 
 ---
 
@@ -87,13 +117,13 @@ python3 -m venv venv
 pip install -r scripts/requirements.txt
 ```
 
-Установятся пакеты для генерации данных (`faker`, `psycopg2-binary`) и для dbt (`dbt-core`, `dbt-postgres`). Проверка (в том же окружении):
+Установятся пакеты для **dbt** (`dbt-core`, `dbt-postgres`). Проверка (в том же окружении):
 
 ```bash
 dbt --version
 ```
 
-**Результат:** в одном окружении доступны скрипт генерации данных и dbt; `dbt --version` показывает версии dbt-core и postgres.
+**Результат:** в окружении доступны dbt-команды; `dbt --version` показывает версии dbt-core и postgres.
 
 ---
 
@@ -106,15 +136,15 @@ cp .env.example .env
 ```
 
 2. Откройте файл `.env` в редакторе.
-3. Заполните обязательные переменные:
+3. Для учебного запуска можно **оставить значения как в `.env.example`**. Обязательные переменные:
 
 | Переменная | Что подставить | Пример |
 |------------|----------------|--------|
-| `PGPASSWORD` | Пароль для внутренней БД Postgres в Lightdash | `my_secure_password` |
-| `LIGHTDASH_SECRET` | Секрет для шифрования (не менее 32 символов) | `my_lightdash_secret_key_32_chars_min` |
+| `PGPASSWORD` | Пароль для Postgres в контейнере | `postgres` |
+| `LIGHTDASH_SECRET` | Секрет для шифрования (не менее 32 символов) | `local_lightdash_secret_change_me_32_chars` |
 | `DBT_PROJECT_DIR` | Путь к папке dbt-проекта | `./dbt_bi` или полный путь, например `/Users/you/projects/very_serious_ai_bi_project/dbt_bi` |
 
-На macOS/Linux при использовании Docker часто нужен **абсолютный путь** к `dbt_bi`, например:
+На macOS/Linux часто нужен **абсолютный путь** к `dbt_bi`, например:
 
 ```bash
 DBT_PROJECT_DIR=/Users/ваш_пользователь/path/to/very_serious_ai_bi_project/dbt_bi
@@ -122,11 +152,15 @@ DBT_PROJECT_DIR=/Users/ваш_пользователь/path/to/very_serious_ai_b
 
 Остальные переменные в `.env` можно оставить по умолчанию.
 
+> Если вы меняете `PGPASSWORD`, не забудьте обновить подключение к базе в Cursor MCP (см. `.cursor/mcp.json`) и/или переменные окружения для dbt (шаг 7).
+
 **Результат:** файл `.env` существует, в нём заданы `PGPASSWORD`, `LIGHTDASH_SECRET` и `DBT_PROJECT_DIR`. Файл `.env` не коммитится в git (он в `.gitignore`).
 
 ---
 
-## Шаг 5. Запустить Postgres и Lightdash в Docker
+## Шаг 5. Запустить Postgres и Lightdash в контейнерах
+
+> **macOS:** команды ниже с `docker compose` (после Colima). **Windows:** подставляйте `podman compose` и `podman exec`.
 
 1. В корне проекта (виртуальное окружение может оставаться активным) сделайте скрипт MinIO исполняемым (на macOS/Linux после клонирования бит execute может не сохраниться):
 
@@ -136,17 +170,21 @@ chmod +x docker/init-minio.sh
 
 2. Запустите контейнеры:
 
-```bash
-docker compose up -d
-```
+- **macOS (Colima):**
+  ```bash
+  docker compose up -d
+  ```
+- **Windows (Podman):**
+  ```bash
+  podman compose up -d
+  ```
 
 3. Дождитесь запуска контейнеров (Postgres, MinIO, Lightdash). Первый запуск может занять несколько минут из-за загрузки образов.
 
 4. Проверьте, что подняты **все три** сервиса: `db`, `minio`, `lightdash`:
-   ```bash
-   docker compose ps
-   ```
-   Должны быть в состоянии `Up`: **db** (порт 5432), **minio** (9000, 9001), **lightdash** (8080). Если виден только `db` или minio падает с «permission denied» — выполните `chmod +x docker/init-minio.sh` и снова `docker compose up -d`. Подробнее — раздел «Частые проблемы».
+   - macOS: `docker compose ps`
+   - Windows: `podman compose ps`  
+   Должны быть в состоянии `Up`: **db** (порт 5432), **minio** (9000, 9001), **lightdash** (8080). Если виден только `db` или minio падает с «permission denied» — выполните `chmod +x docker/init-minio.sh` и снова запустите compose. Подробнее — раздел «Частые проблемы».
 
 5. Откройте в браузере: **http://localhost:8080**
 
@@ -154,18 +192,35 @@ docker compose up -d
 
 ---
 
-## Шаг 6. Сгенерировать тестовые данные в Postgres
+## Шаг 6. Загрузить тестовые данные в Postgres
 
-1. Убедитесь, что вы в корне проекта, виртуальное окружение **активно** и Postgres уже запущен (шаг 5: `docker compose up -d`). В `.env` должен быть задан `PGPASSWORD`.
-2. Выполните:
+Загрузите готовый SQL-дамп, который соответствует текущему dbt-проекту (схема `main`, таблицы `users`, `orders`, `products`, `events`, `promotions`, `refunds`).
+
+> Если вы импортируете **другой** `.sql`-дамп (со своей схемой/таблицами), текущие dbt-модели из `dbt_bi/` могут не заработать без адаптации (они ожидают источник `main.*`).
+
+1. Убедитесь, что Postgres запущен (шаг 5: `docker compose up -d` на macOS или `podman compose up -d` на Windows).
+2. Выполните (из **корня проекта**):
+
+- **macOS (Colima):**
+  ```bash
+  docker compose exec -T db bash -lc 'export PGPASSWORD="$POSTGRES_PASSWORD"; psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1' < data/main_seed.sql
+  ```
+- **Windows (Podman):**
+  ```bash
+  podman compose exec -T db bash -lc 'export PGPASSWORD="$POSTGRES_PASSWORD"; psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1' < data/main_seed.sql
+  ```
+
+Либо скриптом (на Windows задайте `COMPOSE_CMD="podman compose"`):
 
 ```bash
-python scripts/generate_test_data.py
+bash scripts/load_seed_to_postgres.sh
 ```
 
-3. В конце должно появиться сообщение вида: `Done. Data in Postgres: localhost/postgres, schema main (users, orders, products, events)`.
+3. Если хотите «начать с чистого листа», удалите volume и поднимите заново:
+   - macOS: `docker compose down -v` и `docker compose up -d`
+   - Windows: `podman compose down -v` и `podman compose up -d`
 
-**Результат:** в Postgres (схема `main`) созданы таблицы `users`, `orders`, `products`, `events` с намеренно «грязными» данными (дубли, пустые значения, разные форматы) для демонстрации очистки в dbt.
+**Результат:** в Postgres (схема `main`) созданы таблицы с намеренно «грязными» данными (дубли, пустые значения, разные форматы дат) для демонстрации очистки в dbt.
 
 ---
 
@@ -259,7 +314,7 @@ cd ..
 
 1. Откройте **http://localhost:8080**, зарегистрируйтесь или войдите.
 2. Создайте организацию и проект, если Lightdash предложит.
-3. На шаге **Select your warehouse** выберите **PostgreSQL**. **Важно:** запросы к складу выполняет сервер Lightdash **из контейнера**, поэтому Host должен быть **`db`** (имя сервиса Postgres в Docker), а не `localhost`. Укажите: **Host: `db`**, Port: `5432`, User: `postgres`, Password — значение `PGPASSWORD` из `.env`, Database: `postgres`, Schema: `main`. SSL mode: `disable`.
+3. На шаге **Select your warehouse** выберите **PostgreSQL**. **Важно:** запросы к складу выполняет сервер Lightdash **из контейнера**, поэтому Host должен быть **`db`** (имя сервиса Postgres в compose), а не `localhost`. Укажите: **Host: `db`**, Port: `5432`, User: `postgres`, Password — значение `PGPASSWORD` из `.env`, Database: `postgres`, Schema: `main`. SSL mode: `disable`.
 4. Добавьте dbt-проект (self-hosted, путь в контейнере `/usr/app/dbt`).
 5. Дождитесь синхронизации.
 
@@ -274,15 +329,11 @@ cd ..
 Чтобы Cursor видел схему Postgres и мог подсказывать по таблицам:
 
 1. Откройте настройки Cursor: **Cursor → Settings → MCP** (или аналог в вашей версии).
-2. Добавьте MCP-сервер для PostgreSQL (если доступен в вашей конфигурации). Пример конфигурации (значения подставьте свои):
+2. Самый простой вариант — использовать готовый пример конфигурации из `.cursor/mcp.json` (он запускает `@modelcontextprotocol/server-postgres` через `npx` и подключается к `localhost:5432`).
+3. Если вы меняли пароль Postgres в `.env`, обновите строку подключения в `.cursor/mcp.json` (значение `POSTGRES_CONNECTION_STRING`).
 
-   - **Name:** `postgres`
-   - **Command / URL** и параметры подключения к вашей БД: host `localhost`, port `5432`, user `postgres`, password из `.env`, database `postgres`, schema `main`.
-
-   Конкретный формат зависит от используемого MCP-сервера для Postgres (например, `npx`-пакет или встроенный коннектор). Укажите те же учётные данные, что в `.env` (PGUSER, PGPASSWORD, PGDATABASE).
-
-3. Сохраните настройки и при необходимости перезапустите Cursor.
-4. В чате Cursor можно упоминать базу данных — модель сможет ориентироваться на схему таблиц.
+4. Сохраните настройки и при необходимости перезапустите Cursor.
+5. В чате Cursor можно упоминать базу данных — модель сможет ориентироваться на схему таблиц.
 
 **Результат:** Cursor подключается к Postgres через MCP и «видит» таблицы `main.users`, `main.orders`, `main.products`, `main.events`.
 
@@ -290,19 +341,21 @@ cd ..
 
 ## Шаг 10. Настроить MCP в Cursor (Jira)
 
-Чтобы Cursor мог читать задачи из Jira:
+Чтобы Cursor мог читать задачи из Jira, используется **официальный Atlassian MCP** (удалённый сервер, авторизация через браузер, без API-токена в конфиге):
 
 1. Создайте бесплатный аккаунт в [Atlassian](https://www.atlassian.com/) и Jira Cloud, если его ещё нет.
 2. Создайте в Jira проект и эпик, например «BI Analytics Setup».
 3. Создайте задачу (Issue): «Рассчитать Retention Rate и выручку по категориям для маркетингового отчета».
-4. В Jira получите API-токен: [Atlassian API tokens](https://id.atlassian.com/manage-profile/security/api-tokens).
-5. В Cursor: **Settings → MCP** добавьте Jira MCP-сервер (например, `@modelcontextprotocol/server-jira` или аналог из документации Cursor). Укажите:
-   - `JIRA_URL` (например, `https://ваш-домен.atlassian.net`),
-   - `JIRA_EMAIL`,
-   - `JIRA_API_TOKEN`.
-6. Сохраните настройки.
+4. В Cursor: **Settings → MCP** откройте `mcp.json` и добавьте сервер `jira`:
+   ```json
+   "jira": {
+     "command": "npx",
+     "args": ["-y", "mcp-remote", "https://mcp.atlassian.com/v1/mcp"]
+   }
+   ```
+5. Сохраните настройки и при первом обращении к Jira в чате **авторизуйте приложение в браузере** (Atlassian запросит доступ к вашему Jira/Confluence).
 
-**Результат:** в чате Cursor по упоминанию @Jira можно запрашивать анализ текущей задачи; Cursor будет видеть описание тикета.
+**Результат:** в чате Cursor по упоминанию @Jira можно запрашивать анализ текущей задачи; Cursor будет видеть описание тикета. Учётные данные не хранятся в проекте — доступ через OAuth в Atlassian.
 
 ---
 
@@ -319,63 +372,57 @@ cd ..
 
 ## Частые проблемы
 
-**`zsh: command not found: docker` или `docker compose: command not found`**  
-Docker не установлен или не в PATH. Для macOS:
-- Установите [Docker Desktop](https://docs.docker.com/desktop/install/mac-install/) и запустите приложение; после запуска команды `docker` и `docker compose` станут доступны в терминале.
-- Либо используйте [Orbstack](https://orbstack.dev/) или [Colima](https://github.com/abiosoft/colima) — после установки и старта демона команда `docker compose` будет работать.
+**`command not found: docker` / `docker compose` или `podman compose`**  
+Рантайм контейнеров не установлен или не в PATH.
 
-После установки проверьте: `docker --version` и `docker compose version`. Новый терминал может понадобиться перезапустить.
+- **macOS:** установите [Colima](https://github.com/abiosoft/colima) по разделу «Запуск контейнеров: Colima (macOS) и Podman (Windows)» выше. После `colima start` команды `docker compose` и `docker exec` работают как обычно.
+- **Windows:** установите [Podman Desktop](https://podman-desktop.io/downloads) и используйте `podman compose` и `podman exec` в шагах инструкции.
+
+После установки проверьте: на macOS — `docker compose version`, на Windows — `podman compose version`. Новый терминал может понадобиться перезапустить.
 
 **`connect ECONNREFUSED 127.0.0.1:5432`** (на хосте: скрипт, dbt, Lightdash CLI)  
 С вашей машины нет доступа к Postgres на порту 5432. Пошаговая проверка (выполняйте из **корня проекта**):
 
-1. **Docker запущен?** Откройте Docker Desktop (или Orbstack/Colima) и убедитесь, что демон работает.
-2. **Контейнер `db` поднят и порт проброшен?**
-   ```bash
-   docker compose ps
-   ```
-   У сервиса `db` должно быть `Up` и в PORTS — `0.0.0.0:5432->5432/tcp`. Если `db` нет или статус не Up: `docker compose up -d` (без имени сервиса).
+1. **Рантайм контейнеров запущен?** macOS: `colima status`. Windows: убедитесь, что Podman Desktop запущен.
+2. **Контейнер `db` поднят и порт проброшен?** macOS: `docker compose ps`. Windows: `podman compose ps`. У сервиса `db` должно быть `Up` и в PORTS — `0.0.0.0:5432->5432/tcp`. Если `db` нет или статус не Up: запустите compose up -d (шаг 5).
 3. **Порт 5432 слушается на хосте?**
    ```bash
    nc -z 127.0.0.1 5432 && echo "OK" || echo "Порт недоступен"
    ```
-   Должно вывести `OK`. Если «Порт недоступен» — перезапустите стек: `docker compose down && docker compose up -d`, подождите 30 секунд и повторите проверку.
+   Должно вывести `OK`. Если «Порт недоступен» — перезапустите стек (compose down -v и compose up -d), подождите 30 секунд и повторите проверку.
 4. **Другой Postgres не занял 5432?** Если на Mac установлен «свой» Postgres и он слушает 5432, остановите его или в `.env` задайте для контейнера другой порт (например `PGPORT=5433`) и пробросьте его в `docker-compose.yml` у сервиса `db` (`"5433:5432"`), тогда с хоста подключайтесь к `localhost:5433` (и в `.env` для скрипта/dbt: `PGPORT=5433`).
 
 В `.env` для запуска с хоста используйте `PGHOST=localhost` (или не задавайте).
 
 **Lightdash в логах: «connect ECONNREFUSED 127.0.0.1:5432»**  
-Контейнер Lightdash (внутренняя БД приложения) пытается подключиться к Postgres по localhost. В этом репозитории в `docker-compose.yml` для Lightdash задано `PGHOST: db` — перезапустите: `docker compose down && docker compose up -d`.
+Контейнер Lightdash (внутренняя БД приложения) пытается подключиться к Postgres по localhost. В этом репозитории в `docker-compose.yml` для Lightdash задано `PGHOST: db` — перезапустите стек (compose down и compose up -d).
 
 **В браузере Lightdash: «Error loading results», «connect ECONNREFUSED 127.0.0.1:5432»**  
 Запросы к данным выполняет сервер Lightdash **из контейнера**; подключение к складу (warehouse) берётся из настроек проекта. Если при создании проекта в поле **Host** склада вы указали `localhost`, сервер из контейнера обращается к 127.0.0.1:5432 (сам себе) и не находит Postgres. Исправление: откройте **Project settings** (иконка шестерёнки у проекта) → **Warehouse connection** → измените **Host** на **`db`** (остальное: Port `5432`, User `postgres`, Password из `.env`, Database `postgres`, Schema `main`, SSL mode `disable`). Сохраните и снова откройте дашборд или Explore.
 
 **dbt не подключается к Postgres при `dbt debug` / `dbt run`**  
-Убедитесь, что Postgres запущен (`docker compose up -d`), в `.env` заданы `PGPASSWORD`, `PGHOST` (при запуске с хоста — `localhost`). При запуске dbt из каталога `dbt_bi` подхватите переменные из корневого `.env` (`set -a && source ../.env && set +a` на macOS/Linux).
+Убедитесь, что Postgres запущен (compose up -d), в `.env` заданы `PGPASSWORD`, `PGHOST` (при запуске с хоста — `localhost`). При запуске dbt из каталога `dbt_bi` подхватите переменные из корневого `.env` (`set -a && source ../.env && set +a` на macOS/Linux).
 
 **minio: «exec /init-minio.sh: permission denied»**  
-Контейнер MinIO не может выполнить скрипт инициализации. В **корне проекта** выполните: `chmod +x docker/init-minio.sh`, затем перезапустите контейнеры: `docker compose down && docker compose up -d`. После клонирования репозитория на macOS/Linux бит исполнения у `init-minio.sh` может не сохраниться — этот шаг описан в шаге 5 инструкции.
+Контейнер MinIO не может выполнить скрипт инициализации. В **корне проекта** выполните: `chmod +x docker/init-minio.sh`, затем перезапустите стек (compose down и compose up -d). После клонирования репозитория на macOS/Linux бит исполнения у `init-minio.sh` может не сохраниться — этот шаг описан в шаге 5 инструкции.
 
-**В `docker compose ps` виден только контейнер `db` (minio и lightdash нет)**  
-Запустите все сервисы из **корня проекта** (каталог с `docker-compose.yml`): `docker compose up -d`. Не указывайте имя сервиса — поднимутся `db`, `minio`, `lightdash`. Подождите 1–2 минуты и снова выполните `docker compose ps`. Если minio падает с «permission denied» — см. пункт выше. Для других ошибок: `docker compose logs minio`, `docker compose logs lightdash`. Убедитесь, что `docker/init-minio.sh` исполняемый: `chmod +x docker/init-minio.sh`, затем `docker compose up -d` снова.
+**В compose ps виден только контейнер `db` (minio и lightdash нет)**  
+Запустите все сервисы из **корня проекта** (каталог с `docker-compose.yml`): macOS — `docker compose up -d`, Windows — `podman compose up -d`. Не указывайте имя сервиса — поднимутся `db`, `minio`, `lightdash`. Подождите 1–2 минуты и снова выполните compose ps. Если minio падает с «permission denied» — см. пункт выше. Для других ошибок: compose logs minio, compose logs lightdash. Убедитесь, что `docker/init-minio.sh` исполняемый: `chmod +x docker/init-minio.sh`, затем снова compose up -d.
 
 **`getaddrinfo ENOTFOUND minio`**  
-Имя хоста `minio` существует только внутри Docker-сети. Lightdash обращается к MinIO по имени `minio` — для этого контейнер **minio** должен быть запущен. Выполните `docker compose up -d` из корня проекта и проверьте `docker compose ps`: все три сервиса (db, minio, lightdash) должны быть в состоянии Up. Если minio не поднялся — см. пункт выше.
-
-**Скрипт генерации данных не подключается к Postgres**  
-Проверьте, что контейнер `db` запущен (`docker compose ps`) и в `.env` задан `PGPASSWORD`. Скрипт читает `.env` из корня проекта.
+Имя хоста `minio` существует только внутри сети контейнеров. Lightdash обращается к MinIO по имени `minio` — для этого контейнер **minio** должен быть запущен. Запустите compose up -d из корня проекта и проверьте compose ps: все три сервиса (db, minio, lightdash) должны быть в состоянии Up. Если minio не поднялся — см. пункт выше.
 
 **Lightdash CLI: «The server does not support SSL connections»**  
-Локальный Postgres в Docker по умолчанию без SSL. В `dbt_bi/profiles.yml` для профиля Postgres добавьте строку `sslmode: disable` (в этом репозитории она уже есть).
+Локальный Postgres в контейнере по умолчанию без SSL. В `dbt_bi/profiles.yml` для профиля Postgres добавьте строку `sslmode: disable` (в этом репозитории она уже есть).
 
 **Lightdash не видит dbt-проект**  
-Проверьте, что в `.env` задан правильный **абсолютный** путь в `DBT_PROJECT_DIR` и что после изменения `.env` вы перезапустили контейнеры: `docker compose down && docker compose up -d`.
+Проверьте, что в `.env` задан правильный **абсолютный** путь в `DBT_PROJECT_DIR` и что после изменения `.env` вы перезапустили контейнеры (compose down и compose up -d).
 
 **Порт 8080 занят**  
 В `.env` задайте другой порт, например `PORT=8081`, и откройте Lightdash по адресу http://localhost:8081.
 
 **Ошибки при `pip install`**  
-Используйте актуальный Python 3.10+ и убедитесь, что виртуальное окружение активировано (`source venv/bin/activate` или аналог для Windows). Все зависимости (включая dbt) ставятся одним командой: `pip install -r scripts/requirements.txt`.
+Используйте актуальный Python 3.10+ и убедитесь, что виртуальное окружение активировано (`source venv/bin/activate` или аналог для Windows). Зависимости (dbt) ставятся командой: `pip install -r scripts/requirements.txt`.
 
 ---
 

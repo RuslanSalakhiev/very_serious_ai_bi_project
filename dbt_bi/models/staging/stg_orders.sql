@@ -16,7 +16,8 @@ cleaned as (
     quantity,
     amount,
     nullif(trim(order_date), '') as order_date_raw,
-    nullif(trim(status), '') as status
+    nullif(trim(status), '') as status,
+    promo_id
   from source
   where order_id is not null
 ),
@@ -39,13 +40,10 @@ with_ts as (
     product_id,
     quantity,
     amount,
-    case
-      when order_date_raw is not null and order_date_raw ~ '^\d{4}-\d{2}-\d{2}'
-      then order_date_raw::timestamp
-      else null
-    end as order_date,
-    status
+    {{ parse_date_raw('order_date_raw') }} as order_date,
+    status,
+    promo_id
   from deduped
 )
 
-select order_id, user_id, product_id, quantity, amount, order_date, status from with_ts
+select order_id, user_id, product_id, quantity, amount, order_date, status, promo_id from with_ts

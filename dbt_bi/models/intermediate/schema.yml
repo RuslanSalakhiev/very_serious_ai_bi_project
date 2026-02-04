@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: int_orders_enriched
+    description: "Intermediate: orders joined to users, products, promotions with derived amount_after_promo."

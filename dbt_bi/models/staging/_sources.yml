@@ -2,10 +2,12 @@ version: 2
 
 sources:
   - name: main
-    description: "Raw Postgres tables (users, orders, products, events) in schema main."
+    description: "Raw Postgres tables (users, orders, products, events, promotions, refunds) in schema main."
     schema: main
     tables:
       - name: users
       - name: orders
       - name: products
       - name: events
+      - name: promotions
+      - name: refunds

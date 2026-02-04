@@ -37,11 +37,7 @@ with_ts as (
     email,
     name,
     country,
-    case
-      when created_at_raw is not null and created_at_raw ~ '^\d{4}-\d{2}-\d{2}'
-      then created_at_raw::timestamp
-      else null
-    end as created_at,
+    {{ parse_date_raw('created_at_raw') }} as created_at,
     is_active
   from deduped
 )

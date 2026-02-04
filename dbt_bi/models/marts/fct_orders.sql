@@ -4,23 +4,26 @@
   )
 }}
 
-with orders as (
-  select * from {{ ref('stg_orders') }}
-),
-users as (
-  select * from {{ ref('stg_users') }}
+with int_orders as (
+  select * from {{ ref('int_orders_enriched') }}
 )
 
 select
-  o.order_id,
-  o.user_id,
-  o.product_id,
-  o.quantity,
-  o.amount,
-  o.order_date,
-  extract(year from o.order_date)::int as order_year,
-  o.status,
-  u.email as user_email,
-  u.country as user_country
-from orders o
-left join users u on o.user_id = u.user_id
+  order_id,
+  user_id,
+  product_id,
+  quantity,
+  amount,
+  amount_after_promo,
+  order_date,
+  order_year,
+  status,
+  promo_id,
+  user_email,
+  user_country,
+  product_name,
+  product_category,
+  product_price,
+  promo_code,
+  promo_discount_pct
+from int_orders

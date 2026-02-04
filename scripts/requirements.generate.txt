@@ -1,0 +1,3 @@
+# Опционально: генерация данных (scripts/generate_test_data.py)
+faker>=22.0.0
+psycopg2-binary>=2.9.0

@@ -23,4 +23,4 @@
 - Задача из Jira связана с конкретными таблицами и моделями.
 - «Грязные» данные очищены в dbt (staging → marts).
 - Метрики и измерения заданы в коде (schema.yml + meta Lightdash), без дублирования SQL в BI.
-- Кейс повторяем: clone → .env → docker-compose up → generate data (Postgres) → dbt run → подключить dbt в Lightdash.
+- Кейс повторяем: clone → .env → Colima/Podman (compose up) → загрузка data/main_seed.sql → dbt run → подключить dbt в Lightdash.

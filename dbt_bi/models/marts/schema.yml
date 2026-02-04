@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: fct_orders
-    description: "Fact table: orders joined to users and products for revenue and
-      retention metrics."
+    description: "Fact table: orders enriched with users, products, promotions; revenue and retention metrics."
     meta:
       lightdash:
         metrics:
@@ -17,6 +16,8 @@ models:
           - user_country
           - status
           - user_id
+          - product_category
+          - promo_code
     columns:
       - name: order_id
         description: "Order primary key."
@@ -30,8 +31,18 @@ models:
           meta:
             dimension:
               type: number
+      - name: product_id
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: quantity
+        config:
+          meta:
+            dimension:
+              type: number
       - name: amount
-        description: "Order amount."
+        description: "Order amount (before promo)."
         config:
           meta:
             dimension:
@@ -41,45 +52,93 @@ models:
                 type: sum
                 format: usd
                 label: "Total Revenue"
+      - name: amount_after_promo
+        description: "Order amount after promo discount."
+        config:
+          meta:
+            dimension:
+              type: number
+            metrics:
+              total_revenue_after_promo:
+                type: sum
+                format: usd
+                label: "Revenue (after promo)"
       - name: order_date
-        description: "Order timestamp."
         config:
           meta:
             dimension:
               type: timestamp
       - name: order_year
-        description: "Year of order (for grouping by year)."
-        config:
-          meta:
-            dimension:
-              type: number
-      - name: product_id
-        description: ""
-        config:
-          meta:
-            dimension:
-              type: number
-      - name: quantity
-        description: ""
         config:
           meta:
             dimension:
               type: number
       - name: status
-        description: ""
         config:
           meta:
             dimension:
               type: string
+      - name: promo_id
+        config:
+          meta:
+            dimension:
+              type: number
       - name: user_email
-        description: ""
         config:
           meta:
             dimension:
               type: string
       - name: user_country
-        description: ""
         config:
           meta:
             dimension:
               type: string
+      - name: product_name
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: product_category
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: product_price
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: promo_code
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: promo_discount_pct
+        config:
+          meta:
+            dimension:
+              type: number
+
+  - name: fct_events
+    description: "Fact table: events joined to users for analytics."
+    columns:
+      - name: event_id
+        tests: [ unique, not_null ]
+      - name: user_id
+      - name: event_type
+      - name: event_at
+      - name: event_year
+      - name: event_month
+      - name: page
+      - name: user_email
+      - name: user_country
+
+  - name: dim_products
+    description: "Dimension: products with cleaned category and has_price flag."
+    columns:
+      - name: product_id
+        tests: [ unique, not_null ]
+      - name: name
+      - name: category
+      - name: price
+      - name: has_price
