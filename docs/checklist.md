@@ -10,13 +10,13 @@
   Сохранены удачные промпты в [prompts.md](prompts.md).
 
 - [ ] **Репозиторий**  
-  Код на GitHub; в README указано: clone → venv → pip install -r scripts/requirements.txt → cp .env.example .env и заполнить PGPASSWORD, LIGHTDASH_SECRET, DBT_PROJECT_DIR → Colima/Podman (compose up) → загрузка data/main_seed.sql → открыть Lightdash и подключить dbt.
+  Код на GitHub; в README указано: clone → venv → pip install -r scripts/requirements.txt → cp .env.example .env и заполнить PGPASSWORD, LIGHTDASH_SECRET, DBT_PROJECT_DIR → Colima/Podman (compose up) → python scripts/generate_test_data.py → открыть Lightdash и подключить dbt.
 
 - [ ] **Визуальный стиль**  
   Если видео: экран показывает чат Cursor, дерево файлов и браузер с Lightdash (см. [visual_setup.md](visual_setup.md)).
 
 - [ ] **Данные**  
-  Данные загружены в Postgres (импорт data/main_seed.sql, схема main); dbt run и dbt compile выполняются без ошибок.
+  Данные сгенерированы в Postgres (скрипт `python scripts/generate_test_data.py`, схема main); dbt run и dbt compile выполняются без ошибок.
 
 - [ ] **Lightdash**  
   Проект dbt подключён, метрики total_revenue и unique_customers видны в UI; один дашборд собран.

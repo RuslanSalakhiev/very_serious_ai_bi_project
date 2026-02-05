@@ -1,28 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Load a SQL file into the Postgres container (Colima on macOS, Podman on Windows).
-# Default: data/main_seed.sql (matches dbt sources: schema "main")
+# Convenience wrapper to generate test data in Postgres using the Python script.
+# Uses .env (PGHOST/PGPORT/PGUSER/PGPASSWORD/PGDATABASE) and assumes Postgres
+# из docker-compose / Podman доступен на host:port.
 #
 # Usage:
 #   bash scripts/load_seed_to_postgres.sh
-#   bash scripts/load_seed_to_postgres.sh data/main_seed.sql
+#   PYTHON_BIN=python3 bash scripts/load_seed_to_postgres.sh
 #
-# On Windows (Podman):
-#   COMPOSE_CMD="podman compose" bash scripts/load_seed_to_postgres.sh
-#
-# Requirements:
-#   - compose up -d (service "db" running). macOS: docker compose (Colima). Windows: podman compose.
+# Требования:
+#   - Активированное venv с установленными зависимостями (`pip install -r scripts/requirements.txt`)
+#   - Запущен Postgres: macOS (Colima) — `docker compose up -d`, Windows (Podman) — `podman compose up -d`
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SQL_FILE="${1:-"$PROJECT_ROOT/data/main_seed.sql"}"
-COMPOSE_CMD="${COMPOSE_CMD:-docker compose}"
-
 cd "$PROJECT_ROOT"
 
-if [[ ! -f "$SQL_FILE" ]]; then
-  echo "SQL file not found: $SQL_FILE" >&2
-  exit 1
+PYTHON_BIN="${PYTHON_BIN:-python}"
+if command -v python3 >/dev/null 2>&1; then
+  PYTHON_BIN="${PYTHON_BIN:-python3}"
 fi
 
-$COMPOSE_CMD exec -T db bash -lc 'export PGPASSWORD="$POSTGRES_PASSWORD"; psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1' < "$SQL_FILE"
+"$PYTHON_BIN" scripts/generate_test_data.py "$@"

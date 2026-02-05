@@ -192,35 +192,28 @@ chmod +x docker/init-minio.sh
 
 ---
 
-## Шаг 6. Загрузить тестовые данные в Postgres
+## Шаг 6. Сгенерировать тестовые данные в Postgres (Python)
 
-Загрузите готовый SQL-дамп, который соответствует текущему dbt-проекту (схема `main`, таблицы `users`, `orders`, `products`, `events`, `promotions`, `refunds`).
-
-> Если вы импортируете **другой** `.sql`-дамп (со своей схемой/таблицами), текущие dbt-модели из `dbt_bi/` могут не заработать без адаптации (они ожидают источник `main.*`).
+Данные для кейса генерируются Python-скриптом в уже запущенный Postgres (схема `main`).  
+Скрипт создаёт таблицы `users`, `products`, `promotions`, `orders`, `refunds`, `events` и заполняет их частично «грязными» данными.
 
 1. Убедитесь, что Postgres запущен (шаг 5: `docker compose up -d` на macOS или `podman compose up -d` на Windows).
-2. Выполните (из **корня проекта**):
+2. Из **корня проекта** с активированным `venv` выполните:
 
-- **macOS (Colima):**
+- **macOS / Linux:**
   ```bash
-  docker compose exec -T db bash -lc 'export PGPASSWORD="$POSTGRES_PASSWORD"; psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1' < data/main_seed.sql
+  python scripts/generate_test_data.py
   ```
-- **Windows (Podman):**
+- **Windows (PowerShell/cmd):**
   ```bash
-  podman compose exec -T db bash -lc 'export PGPASSWORD="$POSTGRES_PASSWORD"; psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1' < data/main_seed.sql
+  python scripts\generate_test_data.py
   ```
 
-Либо скриптом (на Windows задайте `COMPOSE_CMD="podman compose"`):
-
-```bash
-bash scripts/load_seed_to_postgres.sh
-```
-
-3. Если хотите «начать с чистого листа», удалите volume и поднимите заново:
+3. (Опционально) Если хотите «начать с чистого листа», удалите volume и поднимите заново:
    - macOS: `docker compose down -v` и `docker compose up -d`
    - Windows: `podman compose down -v` и `podman compose up -d`
 
-**Результат:** в Postgres (схема `main`) созданы таблицы с намеренно «грязными» данными (дубли, пустые значения, разные форматы дат) для демонстрации очистки в dbt.
+**Результат:** в Postgres (схема `main`) созданы таблицы с намеренно «грязными» данными (дубли, пустые значения, разные форматы дат) для демонстрации работы dbt-моделей.
 
 ---
 

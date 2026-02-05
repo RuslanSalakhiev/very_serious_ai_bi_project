@@ -20,7 +20,7 @@
 | 3 | Установить зависимости в `venv` (`pip install -r scripts/requirements.txt` — dbt) |
 | 4 | Настроить `.env` (PGPASSWORD, LIGHTDASH_SECRET, DBT_PROJECT_DIR) |
 | 5 | Запустить Postgres и Lightdash (Colima: `docker compose up -d`; Podman: `podman compose up -d`) |
-| 6 | Загрузить тестовые данные в Postgres (импорт `data/main_seed.sql`) |
+| 6 | Сгенерировать тестовые данные в Postgres (`python scripts/generate_test_data.py`) |
 | 7 | Выполнить `dbt run`, `dbt compile` (подключение к Postgres из `.env`) |
 | 8 | Подключить проект dbt в Lightdash (CLI или UI) и проверить метрики |
 | 9 | Настроить MCP в Cursor для Postgres |
@@ -39,8 +39,8 @@
 
 | Каталог / файл | Назначение |
 |----------------|------------|
-| **data/** | SQL-дамп тестовых данных (`main_seed.sql`) |
-| **scripts/** | Скрипт загрузки дампа в Postgres (`load_seed_to_postgres.sh`) |
+| **data/** | Дополнительные SQL-файлы (опционально) |
+| **scripts/** | Скрипты для работы с данными и окружением (`generate_test_data.py`, `load_seed_to_postgres.sh`) |
 | **dbt_bi/** | dbt-проект: staging (stg_orders, stg_users), marts (fct_orders), schema.yml с тестами и meta для Lightdash |
 | **docker/** | Скрипт `init-minio.sh` для Lightdash |
 | **docs/** | Инструкции и материалы кейса |
@@ -59,13 +59,13 @@
 
 ## Быстрый старт (после установки по инструкции)
 
-Если вы уже прошли шаги 1–7 из [docs/installation.md](docs/installation.md):
+Если вы уже прошли шаги 1–5 из [docs/installation.md](docs/installation.md):
 
 ```bash
 # В корне проекта, с активированным venv
 # macOS (Colima): docker compose up -d
 # Windows (Podman): podman compose up -d
-bash scripts/load_seed_to_postgres.sh
+python scripts/generate_test_data.py
 cd dbt_bi && set -a && source ../.env && set +a && dbt run && dbt compile && cd ..
 ```
 
