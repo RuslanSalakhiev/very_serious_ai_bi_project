@@ -1,10 +1,10 @@
 # BI Analytics Sandbox
 
-**Учебный репозиторий** для пошаговой установки и прохождения end-to-end кейса: Jira → Cursor (MCP) → dbt → Lightdash на тестовых данных в **PostgreSQL**. Весь Python-инструментарий (dbt) работает в **одном виртуальном окружении** `venv` в корне проекта.
+**Учебный репозиторий** для пошаговой установки и прохождения end-to-end кейса: Cursor (MCP) → dbt → Lightdash на тестовых данных в **PostgreSQL**. Весь Python-инструментарий (dbt) работает в **одном виртуальном окружении** `venv` в корне проекта.
 
 ## Цель
 
-Показать, как с помощью Cursor и MCP (Database + Jira) анализировать задачу из Jira, строить dbt-модели (staging → marts), настраивать семантический слой для Lightdash и собирать дашборд без дублирования SQL. Все компоненты связаны в одной «песочнице» — можно пройти по шагам и повторить у себя.
+Показать, как с помощью Cursor и MCP (Database) анализировать бизнес-задачу, строить dbt-модели (staging → marts), настраивать семантический слой для Lightdash и собирать дашборд без дублирования SQL. Все компоненты связаны в одной «песочнице» — можно пройти по шагам и повторить у себя.
 
 ## Пошаговая установка
 
@@ -24,8 +24,7 @@
 | 7 | Выполнить `dbt run`, `dbt compile` (подключение к Postgres из `.env`) |
 | 8 | Подключить проект dbt в Lightdash (CLI или UI) и проверить метрики |
 | 9 | Настроить MCP в Cursor для Postgres |
-| 10 | Настроить MCP в Cursor для Jira (аккаунт Atlassian, тикет) |
-| 11 | Пройти сценарий кейса (анализ задачи, модели, дашборд) |
+| 10 | Пройти сценарий кейса (анализ задачи, модели, дашборд) |
 
 В конце инструкции — раздел «Частые проблемы» и ссылки на остальные документы.
 
@@ -34,8 +33,7 @@
 - **Python 3.10+** — dbt
 - **Контейнеры** — Postgres и Lightdash: Colima (macOS) или Podman (Windows); см. [installation.md](docs/installation.md)
 - **dbt-core + dbt-postgres** — трансформации
-- **Cursor** — редактор с MCP (Postgres, Jira)
-- **Аккаунт Atlassian (Jira Cloud)** — для шага с Jira MCP
+- **Cursor** — редактор с MCP (Postgres)
 
 ## Структура проекта
 
@@ -46,7 +44,7 @@
 | **dbt_bi/** | dbt-проект: staging (stg_orders, stg_users), marts (fct_orders), schema.yml с тестами и meta для Lightdash |
 | **docker/** | Скрипт `init-minio.sh` для Lightdash |
 | **docs/** | Инструкции и материалы кейса |
-| **.cursor/** | Пример `mcp.json` для Postgres и Jira (Jira — официальный Atlassian MCP, авторизация в браузере) |
+| **.cursor/** | Пример `mcp.json` для Postgres |
 
 ## Документация в docs/
 

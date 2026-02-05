@@ -22,4 +22,4 @@
   Проект dbt подключён, метрики total_revenue и unique_customers видны в UI; один дашборд собран.
 
 - [ ] **MCP**  
-  Database MCP указывает на Postgres (localhost, schema main); Jira MCP настроен через Atlassian remote (mcp.atlassian.com), тикет «BI Analytics Setup» доступен в Cursor после авторизации в браузере.
+  Database MCP указывает на Postgres (localhost, schema main).

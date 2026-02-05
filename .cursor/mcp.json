@@ -6,10 +6,6 @@
       "env": {
         "POSTGRES_CONNECTION_STRING": "postgresql://postgres:postgres@localhost:5432/postgres"
       }
-    },
-    "jira": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.atlassian.com/v1/mcp"]
     }
   }
 }
