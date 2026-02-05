@@ -1,0 +1,48 @@
+name: products count by category
+description: "Количество товаров по категориям"
+tableName: dim_products
+updatedAt: "2026-02-05T12:00:00.000Z"
+metricQuery:
+  exploreName: dim_products
+  dimensions:
+    - dim_products_category
+  metrics:
+    - dim_products_row_count
+  filters: {}
+  sorts:
+    - fieldId: dim_products_row_count
+      descending: true
+  limit: 500
+  metricOverrides: {}
+  dimensionOverrides: {}
+  tableCalculations: []
+  additionalMetrics: []
+  customDimensions: []
+chartConfig:
+  type: cartesian
+  config:
+    layout:
+      stack: none
+      xField: dim_products_category
+      yField:
+        - dim_products_row_count
+      flipAxes: true
+    eChartsConfig:
+      series:
+        - type: bar
+          encode:
+            xRef:
+              field: dim_products_category
+            yRef:
+              field: dim_products_row_count
+          yAxisIndex: 0
+          isFilteredOut: false
+      showAxisTicks: false
+slug: products-count-by-category
+tableConfig:
+  columnOrder:
+    - dim_products_category
+    - dim_products_row_count
+spaceSlug: shared
+version: 1
+downloadedAt: "2026-02-05T12:00:00.000Z"

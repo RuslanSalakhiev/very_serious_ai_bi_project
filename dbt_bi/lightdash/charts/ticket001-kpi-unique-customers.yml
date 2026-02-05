@@ -1,0 +1,27 @@
+name: "KPI: Уникальные клиенты"
+description: "Количество уникальных клиентов"
+tableName: fct_orders
+updatedAt: "2026-02-05T12:00:00.000Z"
+metricQuery:
+  exploreName: fct_orders
+  dimensions: []
+  metrics:
+    - fct_orders_unique_customers
+  filters: {}
+  sorts: []
+  limit: 1
+  metricOverrides: {}
+  dimensionOverrides: {}
+  tableCalculations: []
+  additionalMetrics: []
+  customDimensions: []
+chartConfig:
+  type: big_number
+  config: {}
+slug: ticket001-kpi-unique-customers
+tableConfig:
+  columnOrder:
+    - fct_orders_unique_customers
+spaceSlug: shared
+version: 1
+downloadedAt: "2026-02-05T12:00:00.000Z"

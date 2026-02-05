@@ -1,0 +1,27 @@
+name: "KPI: Средний чек"
+description: "Средняя сумма заказа"
+tableName: fct_orders
+updatedAt: "2026-02-05T12:00:00.000Z"
+metricQuery:
+  exploreName: fct_orders
+  dimensions: []
+  metrics:
+    - fct_orders_avg_order_value
+  filters: {}
+  sorts: []
+  limit: 1
+  metricOverrides: {}
+  dimensionOverrides: {}
+  tableCalculations: []
+  additionalMetrics: []
+  customDimensions: []
+chartConfig:
+  type: big_number
+  config: {}
+slug: ticket001-kpi-avg-order-value
+tableConfig:
+  columnOrder:
+    - fct_orders_avg_order_value
+spaceSlug: shared
+version: 1
+downloadedAt: "2026-02-05T12:00:00.000Z"

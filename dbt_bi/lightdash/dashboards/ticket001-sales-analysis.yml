@@ -1,0 +1,92 @@
+name: "TICKET-001: Анализ продаж и выручки"
+description: |
+  Дашборд для коммерческого директора.
+  Отвечает на вопросы:
+  - Какая общая выручка за период?
+  - Как выручка менялась по месяцам?
+  - Сколько заказов и уникальных клиентов?
+  - Какой средний чек?
+  - Какие страны приносят больше всего выручки?
+  - Как распределяются заказы по статусам?
+updatedAt: "2026-02-05T12:00:00.000Z"
+
+tiles:
+  - x: 0
+    y: 0
+    h: 4
+    w: 6
+    type: saved_chart
+    properties:
+      belongsToDashboard: true
+      chartName: "KPI: Общая выручка"
+      chartSlug: ticket001-kpi-total-revenue
+
+  - x: 6
+    y: 0
+    h: 4
+    w: 6
+    type: saved_chart
+    properties:
+      belongsToDashboard: true
+      chartName: "KPI: Количество заказов"
+      chartSlug: ticket001-kpi-total-orders
+
+  - x: 12
+    y: 0
+    h: 4
+    w: 6
+    type: saved_chart
+    properties:
+      belongsToDashboard: true
+      chartName: "KPI: Уникальные клиенты"
+      chartSlug: ticket001-kpi-unique-customers
+
+  - x: 18
+    y: 0
+    h: 4
+    w: 6
+    type: saved_chart
+    properties:
+      belongsToDashboard: true
+      chartName: "KPI: Средний чек"
+      chartSlug: ticket001-kpi-avg-order-value
+
+  - x: 0
+    y: 4
+    h: 8
+    w: 24
+    type: saved_chart
+    properties:
+      belongsToDashboard: true
+      chartName: "Выручка по месяцам"
+      chartSlug: ticket001-revenue-by-month
+
+  - x: 0
+    y: 12
+    h: 8
+    w: 14
+    type: saved_chart
+    properties:
+      belongsToDashboard: true
+      chartName: "Выручка по странам (Топ-10)"
+      chartSlug: ticket001-revenue-by-country
+
+  - x: 14
+    y: 12
+    h: 8
+    w: 10
+    type: saved_chart
+    properties:
+      belongsToDashboard: true
+      chartName: "Заказы по статусам"
+      chartSlug: ticket001-orders-by-status
+
+filters:
+  metrics: []
+  dimensions: []
+  tableCalculations: []
+
+tabs: []
+spaceSlug: shared
+slug: ticket001-sales-analysis
+version: 1

@@ -1,0 +1,48 @@
+name: price by category
+description: ""
+tableName: dim_products
+updatedAt: "2026-02-05T10:39:10.818Z"
+metricQuery:
+  exploreName: dim_products
+  dimensions:
+    - dim_products_category
+    - dim_products_price
+  metrics: []
+  filters: {}
+  sorts:
+    - fieldId: dim_products_category
+      descending: false
+  limit: 500
+  metricOverrides: {}
+  dimensionOverrides: {}
+  tableCalculations: []
+  additionalMetrics: []
+  customDimensions: []
+chartConfig:
+  type: cartesian
+  config:
+    layout:
+      stack: none
+      xField: dim_products_category
+      yField:
+        - dim_products_price
+      flipAxes: true
+    eChartsConfig:
+      series:
+        - type: bar
+          encode:
+            xRef:
+              field: dim_products_category
+            yRef:
+              field: dim_products_price
+          yAxisIndex: 0
+          isFilteredOut: false
+      showAxisTicks: false
+slug: price-by-category
+tableConfig:
+  columnOrder:
+    - dim_products_category
+    - dim_products_price
+spaceSlug: shared
+version: 1
+downloadedAt: "2026-02-05T12:07:34.417Z"

@@ -1,0 +1,48 @@
+name: "Выручка по месяцам"
+description: "Динамика выручки по месяцам — рост или падение"
+tableName: fct_orders
+updatedAt: "2026-02-05T12:00:00.000Z"
+metricQuery:
+  exploreName: fct_orders
+  dimensions:
+    - fct_orders_order_date_month
+  metrics:
+    - fct_orders_total_revenue
+  filters: {}
+  sorts:
+    - fieldId: fct_orders_order_date_month
+      descending: false
+  limit: 500
+  metricOverrides: {}
+  dimensionOverrides: {}
+  tableCalculations: []
+  additionalMetrics: []
+  customDimensions: []
+chartConfig:
+  type: cartesian
+  config:
+    layout:
+      stack: none
+      xField: fct_orders_order_date_month
+      yField:
+        - fct_orders_total_revenue
+      flipAxes: false
+    eChartsConfig:
+      series:
+        - type: line
+          encode:
+            xRef:
+              field: fct_orders_order_date_month
+            yRef:
+              field: fct_orders_total_revenue
+          yAxisIndex: 0
+          isFilteredOut: false
+      showAxisTicks: false
+slug: ticket001-revenue-by-month
+tableConfig:
+  columnOrder:
+    - fct_orders_order_date_month
+    - fct_orders_total_revenue
+spaceSlug: shared
+version: 1
+downloadedAt: "2026-02-05T12:00:00.000Z"

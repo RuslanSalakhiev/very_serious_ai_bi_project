@@ -9,7 +9,20 @@ models:
           unique_customers:
             type: count_distinct
             sql: "user_id"
-            label: "Unique Customers"
+            label: "Уникальные клиенты"
+          orders_count:
+            type: count
+            label: "Количество заказов"
+          total_revenue:
+            type: sum
+            sql: "amount"
+            label: "Общая выручка"
+            format: usd
+          avg_order_value:
+            type: average
+            sql: "amount"
+            label: "Средний чек"
+            format: usd
         dimensions:
           - order_date
           - order_year
@@ -24,11 +37,19 @@ models:
         meta:
           dimension:
             type: number
+          metrics:
+            orders_count:
+              type: count
+              label: "Количество заказов"
       - name: user_id
         description: "Customer ID."
         meta:
           dimension:
             type: number
+          metrics:
+            unique_customers:
+              type: count_distinct
+              label: "Уникальные клиенты"
       - name: product_id
         meta:
           dimension:
@@ -47,6 +68,10 @@ models:
               type: sum
               format: usd
               label: "Total Revenue"
+            avg_order_value:
+              type: average
+              format: usd
+              label: "Средний чек"
       - name: amount_after_promo
         description: "Order amount after promo discount."
         meta:
@@ -104,6 +129,16 @@ models:
 
   - name: dim_products
     description: "Dimension: products with cleaned category and has_price flag."
+    meta:
+      lightdash:
+        metrics:
+          row_count:
+            type: count
+            label: "Количество товаров"
+        dimensions:
+          - category
+          - price
+          - has_price
     columns:
       - name: product_id
         tests: [ unique, not_null ]
