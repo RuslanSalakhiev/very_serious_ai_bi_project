@@ -24,8 +24,21 @@ joined as (
     o.product_id,
     o.quantity,
     o.amount,
-    o.order_date,
-    extract(year from o.order_date)::int as order_year,
+    case
+      when o.order_date is null then null
+      when o.order_date in ('not-a-date', '', '2025-13-45', '01/02/2025') then null
+      when o.order_date ~ '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$'
+        then to_timestamp(o.order_date, 'YYYY-MM-DD"T"HH24:MI:SS')
+      when o.order_date ~ '^\d{4}-\d{2}-\d{2}$'
+        then to_timestamp(o.order_date, 'YYYY-MM-DD')
+      when o.order_date ~ '^\d{2}/\d{2}/\d{4} \d{2}:\d{2}$'
+        then to_timestamp(o.order_date, 'DD/MM/YYYY HH24:MI')
+      when o.order_date ~ '^\d{2}-\d{2}-\d{4}$'
+        then to_timestamp(o.order_date, 'MM-DD-YYYY')
+      when o.order_date ~ '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$'
+        then to_timestamp(o.order_date, 'YYYY-MM-DD HH24:MI:SS')
+      else null
+    end as order_date_ts,
     o.status,
     o.promo_id,
     u.email as user_email,
@@ -53,8 +66,8 @@ final as (
       then round(amount * (1 - promo_discount_pct / 100.0), 2)
       else amount
     end as amount_after_promo,
-    order_date,
-    order_year,
+    order_date_ts as order_date,
+    extract(year from order_date_ts)::int as order_year,
     status,
     promo_id,
     user_email,

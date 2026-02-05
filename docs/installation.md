@@ -172,7 +172,7 @@ chmod +x docker/init-minio.sh
 
 - **macOS (Colima):**
   ```bash
-  docker compose up -d
+  docker-compose up -d
   ```
 - **Windows (Podman):**
   ```bash
@@ -352,6 +352,26 @@ cd ..
 - **Windows:** установите [Podman Desktop](https://podman-desktop.io/downloads) и используйте `podman compose` и `podman exec` в шагах инструкции.
 
 После установки проверьте: на macOS — `docker compose version`, на Windows — `podman compose version`. Новый терминал может понадобиться перезапустить.
+
+**`error getting credentials - err: exec: "docker-credential-desktop": executable file not found in $PATH` при `docker-compose up` / `docker compose up`**  
+На машине осталась конфигурация от Docker Desktop, но самого помощника `docker-credential-desktop` нет. Для публичных образов (как в этом проекте) авторизация не нужна, поэтому можно отключить хранение кредов:
+
+1. Посмотрите конфиг Docker:
+   ```bash
+   cat ~/.docker/config.json
+   ```
+2. Если внутри есть строка `"credsStore": "desktop"` или `"desktop"` в блоке `credHelpers`:
+   - откройте файл в редакторе (`nano ~/.docker/config.json` или через VS Code / Cursor);
+   - удалите ключ `"credsStore": "desktop"` и/или записи с `"desktop"` из `credHelpers` (следите за корректной запятой в JSON);
+   - сохраните файл.
+3. Повторите запуск:
+   ```bash
+   docker-compose up -d
+   # или, если у вас настроен docker compose v2:
+   docker compose up -d
+   ```
+
+После удаления `desktop` из настроек Docker больше не будет пытаться вызывать отсутствующий бинарь `docker-credential-desktop`, и образы проекта будут скачиваться нормально.
 
 **`connect ECONNREFUSED 127.0.0.1:5432`** (на хосте: скрипт, dbt, Lightdash CLI)  
 С вашей машины нет доступа к Postgres на порту 5432. Пошаговая проверка (выполняйте из **корня проекта**):

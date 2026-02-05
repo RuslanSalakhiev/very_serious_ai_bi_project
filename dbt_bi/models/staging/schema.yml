@@ -7,44 +7,38 @@ models:
       - name: order_id
         description: "Primary key."
         tests: [ unique, not_null ]
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: user_id
         description: "FK to users."
         tests:
           - relationships:
               to: ref('stg_users')
               field: user_id
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: order_date
         description: "Order timestamp."
-        config:
-          meta:
-            dimension:
-              type: timestamp
+        meta:
+          dimension:
+            type: timestamp
       - name: quantity
         description: ""
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: amount
         description: ""
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: status
         description: ""
-        config:
-          meta:
-            dimension:
-              type: string
+        meta:
+          dimension:
+            type: string
       - name: promo_id
         description: "Промокод (может быть пустым)."
 
@@ -54,37 +48,31 @@ models:
       - name: user_id
         description: "Primary key."
         tests: [ unique, not_null ]
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: email
         description: "User email."
-        config:
-          meta:
-            dimension:
-              type: string
+        meta:
+          dimension:
+            type: string
       - name: created_at
         description: "Дата регистрации (может быть в строковом формате)."
-        config:
-          meta:
-            dimension:
-              type: timestamp
+        meta:
+          dimension:
+            type: timestamp
       - name: name
         description: ""
-        config:
-          meta:
-            dimension:
-              type: string
+        meta:
+          dimension:
+            type: string
       - name: country
         description: ""
-        config:
-          meta:
-            dimension:
-              type: string
+        meta:
+          dimension:
+            type: string
       - name: is_active
         description: ""
-        config:
-          meta:
-            dimension:
-              type: boolean
+        meta:
+          dimension:
+            type: boolean

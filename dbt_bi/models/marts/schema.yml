@@ -21,103 +21,86 @@ models:
     columns:
       - name: order_id
         description: "Order primary key."
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: user_id
         description: "Customer ID."
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: product_id
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: quantity
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: amount
         description: "Order amount (before promo)."
-        config:
-          meta:
-            dimension:
-              type: number
-            metrics:
-              total_revenue:
-                type: sum
-                format: usd
-                label: "Total Revenue"
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_revenue:
+              type: sum
+              format: usd
+              label: "Total Revenue"
       - name: amount_after_promo
         description: "Order amount after promo discount."
-        config:
-          meta:
-            dimension:
-              type: number
-            metrics:
-              total_revenue_after_promo:
-                type: sum
-                format: usd
-                label: "Revenue (after promo)"
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_revenue_after_promo:
+              type: sum
+              format: usd
+              label: "Revenue (after promo)"
       - name: order_date
-        config:
-          meta:
-            dimension:
-              type: timestamp
+        meta:
+          dimension:
+            type: timestamp
       - name: order_year
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: status
-        config:
-          meta:
-            dimension:
-              type: string
+        meta:
+          dimension:
+            type: string
       - name: promo_id
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: user_email
-        config:
-          meta:
-            dimension:
-              type: string
+        meta:
+          dimension:
+            type: string
       - name: user_country
-        config:
-          meta:
-            dimension:
-              type: string
+        meta:
+          dimension:
+            type: string
       - name: product_name
-        config:
-          meta:
-            dimension:
-              type: string
+        meta:
+          dimension:
+            type: string
       - name: product_category
-        config:
-          meta:
-            dimension:
-              type: string
+        meta:
+          dimension:
+            type: string
       - name: product_price
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
       - name: promo_code
-        config:
-          meta:
-            dimension:
-              type: string
+        meta:
+          dimension:
+            type: string
       - name: promo_discount_pct
-        config:
-          meta:
-            dimension:
-              type: number
+        meta:
+          dimension:
+            type: number
 
   - name: dim_products
     description: "Dimension: products with cleaned category and has_price flag."
