@@ -119,20 +119,6 @@ models:
             dimension:
               type: number
 
-  - name: fct_events
-    description: "Fact table: events joined to users for analytics."
-    columns:
-      - name: event_id
-        tests: [ unique, not_null ]
-      - name: user_id
-      - name: event_type
-      - name: event_at
-      - name: event_year
-      - name: event_month
-      - name: page
-      - name: user_email
-      - name: user_country
-
   - name: dim_products
     description: "Dimension: products with cleaned category and has_price flag."
     columns:

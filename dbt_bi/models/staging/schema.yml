@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: stg_orders
-    description: "Staging orders: cleaned duplicates, nulls, dates as timestamp."
+    description: "Staging orders: упрощённая подготовка без полного клининга."
     columns:
       - name: order_id
         description: "Primary key."
@@ -17,16 +17,6 @@ models:
           - relationships:
               to: ref('stg_users')
               field: user_id
-        config:
-          meta:
-            dimension:
-              type: number
-      - name: product_id
-        description: "FK to products."
-        tests:
-          - relationships:
-              to: ref('stg_products')
-              field: product_id
         config:
           meta:
             dimension:
@@ -56,18 +46,10 @@ models:
             dimension:
               type: string
       - name: promo_id
-        description: "FK to promotions."
-        tests:
-          - relationships:
-              to: ref('stg_promotions')
-              field: promo_id
-        config:
-          meta:
-            dimension:
-              type: number
+        description: "Промокод (может быть пустым)."
 
   - name: stg_users
-    description: "Staging users: cleaned duplicates, standardized is_active."
+    description: "Staging users: лёгкая нормализация без полного клининга."
     columns:
       - name: user_id
         description: "Primary key."
@@ -83,7 +65,7 @@ models:
             dimension:
               type: string
       - name: created_at
-        description: "Registration timestamp."
+        description: "Дата регистрации (может быть в строковом формате)."
         config:
           meta:
             dimension:
@@ -106,48 +88,3 @@ models:
           meta:
             dimension:
               type: boolean
-
-  - name: stg_products
-    description: "Staging products: cleaned nulls and trim."
-    columns:
-      - name: product_id
-        description: "Primary key."
-        tests: [ unique, not_null ]
-      - name: name
-      - name: category
-      - name: price
-
-  - name: stg_promotions
-    description: "Staging promotions: cleaned dates as timestamp."
-    columns:
-      - name: promo_id
-        description: "Primary key."
-        tests: [ unique, not_null ]
-      - name: code
-      - name: discount_pct
-      - name: valid_from
-      - name: valid_to
-
-  - name: stg_refunds
-    description: "Staging refunds: cleaned dates and reason."
-    columns:
-      - name: refund_id
-        tests: [ unique, not_null ]
-      - name: order_id
-      - name: amount
-      - name: refund_date
-      - name: reason
-
-  - name: stg_events
-    description: "Staging events: cleaned event_at as timestamp."
-    columns:
-      - name: event_id
-        tests: [ unique, not_null ]
-      - name: user_id
-        tests:
-          - relationships:
-              to: ref('stg_users')
-              field: user_id
-      - name: event_type
-      - name: event_at
-      - name: page

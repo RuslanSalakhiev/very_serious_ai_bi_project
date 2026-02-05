@@ -5,7 +5,7 @@
 }}
 
 with products as (
-  select * from {{ ref('stg_products') }}
+  select * from {{ source('main', 'products') }}
 ),
 
 with_category_clean as (
